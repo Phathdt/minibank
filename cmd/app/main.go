@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/gofiber/fiber/v2"
 	"minibank/config"
+	"minibank/server"
+
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -12,11 +14,12 @@ func main() {
 		log.Fatalf("%s", err.Error())
 	}
 
-	app := fiber.New()
+	app, err := server.NewApp()
+	if err != nil {
+		log.Fatalf("%s", err.Error())
+	}
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
-	log.Fatal(app.Listen(":3000"))
+	if err := app.Run(viper.GetString("PORT")); err != nil {
+		log.Fatalf("%s", err.Error())
+	}
 }
