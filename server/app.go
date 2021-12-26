@@ -10,6 +10,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 	"minibank/auth"
+	"minibank/auth/delivery/http"
 	authrepo "minibank/auth/repository"
 	"minibank/auth/usecase"
 )
@@ -51,6 +52,8 @@ func (a *App) Run(port string) error {
 	app.Use(recover.New())
 	app.Get("/", ping())
 	app.Get("/ping", ping())
+
+	http.RegisterHTTPEndpoints(app, a.authUC)
 
 	addr := fmt.Sprintf(":%d", viper.GetInt("PORT"))
 	err := app.Listen(addr)

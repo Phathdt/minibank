@@ -26,6 +26,11 @@ func NewAuthUseCase(userRepo auth.UserRepository, hashSalt string, signingKey []
 }
 
 func (au *AuthUseCase) SignUp(ctx context.Context, email, password string) error {
+	user, _ := au.userRepo.GetUserByEmail(ctx, email)
+	if user != nil {
+		return auth.ErrUserExist
+	}
+
 	pwd := sha1.New()
 	pwd.Write([]byte(password))
 	pwd.Write([]byte(au.hashSalt))

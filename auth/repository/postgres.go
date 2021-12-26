@@ -34,6 +34,12 @@ func (r UserRepository) GetUser(ctx context.Context, id int) (*auth.User, error)
 }
 
 func (r UserRepository) GetUserByEmail(ctx context.Context, email string) (*auth.User, error) {
-	//TODO implement me
-	panic("implement me")
+	u, err := r.q.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	user := u.MapToEntity()
+
+	return &user, nil
 }
