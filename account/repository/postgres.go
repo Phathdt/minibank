@@ -27,6 +27,34 @@ func (r Repo) ListAccounts(ctx context.Context, userID int64) ([]account.Account
 	return accounts, nil
 }
 
+func (r Repo) GetAccount(ctx context.Context, accountID int64) (*account.Account, error) {
+	acc, err := r.q.GetAccount(ctx, accountID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, account.ErrAccountNotFound
+		}
+
+		return nil, err
+	}
+
+	a := acc.MapToEntity()
+
+	return &a, nil
+}
+
+func (r Repo) UpdateAccount(ctx context.Context, accountID, balance int64) error {
+	_, err := r.q.UpdateBalanceAccount(ctx, postgresql.UpdateBalanceAccountParams{
+		Balance:   balance,
+		AccountID: accountID,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 func NewAccountRepo(db *sql.DB) *Repo {
 	return &Repo{q: postgresql.New(db)}
 }

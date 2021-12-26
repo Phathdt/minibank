@@ -3,15 +3,21 @@ package usecase
 import (
 	"context"
 
+	"minibank/account"
 	"minibank/transaction"
 )
 
 type TransUseCase struct {
 	transRepo transaction.Repository
+	accRepo   account.Repository
+}
+
+func NewTransUseCase(transRepo transaction.Repository, accRepo account.Repository) *TransUseCase {
+	return &TransUseCase{transRepo: transRepo, accRepo: accRepo}
 }
 
 func (tu *TransUseCase) CreateDepositTransaction(ctx context.Context, userID, accountID, amount int64) (*transaction.Transaction, error) {
-	_, err := tu.transRepo.GetAccount(ctx, accountID)
+	_, err := tu.accRepo.GetAccount(ctx, accountID)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +28,7 @@ func (tu *TransUseCase) CreateDepositTransaction(ctx context.Context, userID, ac
 		return nil, err
 	}
 
-	if err = tu.transRepo.UpdateAccount(ctx, accountID, amount); err != nil {
+	if err = tu.accRepo.UpdateAccount(ctx, accountID, amount); err != nil {
 		return nil, err
 	}
 
@@ -30,16 +36,16 @@ func (tu *TransUseCase) CreateDepositTransaction(ctx context.Context, userID, ac
 }
 
 func (tu *TransUseCase) CreateWithdrawTransaction(ctx context.Context, userID, accountID, amount int64) (*transaction.Transaction, error) {
-	account, err := tu.transRepo.GetAccount(ctx, accountID)
+	acc, err := tu.accRepo.GetAccount(ctx, accountID)
 	if err != nil {
 		return nil, err
 	}
 
-	if account.UserID != userID {
-		return nil, transaction.ErrAccountNotFound
+	if acc.UserID != userID {
+		return nil, account.ErrNotYourAccount
 	}
 
-	if account.Balance < amount {
+	if acc.Balance < amount {
 		return nil, transaction.ErrAccountBalance
 	}
 
@@ -48,15 +54,11 @@ func (tu *TransUseCase) CreateWithdrawTransaction(ctx context.Context, userID, a
 		return nil, err
 	}
 
-	if err := tu.transRepo.UpdateAccount(ctx, accountID, -amount); err != nil {
+	if err := tu.accRepo.UpdateAccount(ctx, accountID, -amount); err != nil {
 		return nil, err
 	}
 
 	return tran, nil
-}
-
-func NewTransUseCase(transRepo transaction.Repository) *TransUseCase {
-	return &TransUseCase{transRepo: transRepo}
 }
 
 func (tu *TransUseCase) ListTransactions(ctx context.Context, userID int64) ([]transaction.Transaction, error) {

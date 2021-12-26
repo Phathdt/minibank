@@ -47,7 +47,7 @@ func NewApp() (*App, error) {
 			[]byte(viper.GetString("SIGNING_KEY")),
 			viper.GetDuration("TOKEN_TTL"),
 		),
-		transUC: transuc.NewTransUseCase(transRepo),
+		transUC: transuc.NewTransUseCase(transRepo, accRepo),
 		accUC:   accuc.NewAccUseCase(accRepo),
 	}, nil
 }
