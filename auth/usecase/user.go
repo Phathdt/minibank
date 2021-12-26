@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dgrijalva/jwt-go/v4"
 	"minibank/auth"
+
+	"github.com/dgrijalva/jwt-go/v4"
 )
 
 type AuthClaims struct {
 	jwt.StandardClaims
-	ID    int32  `json:"id"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
 }
 
 type AuthUseCase struct {
@@ -33,8 +33,8 @@ func NewAuthUseCase(userRepo auth.UserRepository, hashSalt string, signingKey []
 	}
 }
 
-func (au *AuthUseCase) SignUp(ctx context.Context, email, password string) error {
-	user, _ := au.userRepo.GetUserByEmail(ctx, email)
+func (au *AuthUseCase) SignUp(ctx context.Context, username, password string) error {
+	user, _ := au.userRepo.GetUserByUsername(ctx, username)
 	if user != nil {
 		return auth.ErrUserExist
 	}
@@ -43,11 +43,11 @@ func (au *AuthUseCase) SignUp(ctx context.Context, email, password string) error
 	pwd.Write([]byte(password))
 	pwd.Write([]byte(au.hashSalt))
 
-	return au.userRepo.CreateUser(ctx, email, fmt.Sprintf("%x", pwd.Sum(nil)))
+	return au.userRepo.CreateUser(ctx, username, fmt.Sprintf("%x", pwd.Sum(nil)))
 }
 
-func (au *AuthUseCase) SignIn(ctx context.Context, email, password string) (string, error) {
-	user, err := au.userRepo.GetUserByEmail(ctx, email)
+func (au *AuthUseCase) SignIn(ctx context.Context, username, password string) (string, error) {
+	user, err := au.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
 		return "", auth.ErrUserNotFound
 	}
@@ -62,9 +62,8 @@ func (au *AuthUseCase) SignIn(ctx context.Context, email, password string) (stri
 	}
 
 	claims := AuthClaims{
-		ID:    user.ID,
-		Email: user.Email,
-		Role:  user.Role,
+		ID:       user.ID,
+		Username: user.Username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: jwt.At(time.Now().Add(au.expireDuration)),
 		},

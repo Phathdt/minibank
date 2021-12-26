@@ -1,9 +1,12 @@
 CREATE TABLE "transactions" (
-    "id" SERIAL PRIMARY KEY,
-    "account_id" int8,
-    "amount" bigint,
+    "id" BIGSERIAL PRIMARY KEY,
+    "from_account_id" bigint NOT NULL,
+    "to_account_id" bigint NOT NULL,
+    "amount" bigint NOT NULL DEFAULT 0,
     "type" text NOT NULL DEFAULT 'deposit'::text,
-    "inserted_at" timestamp(0) NOT NULL DEFAULT now(),
-    "updated_at" timestamp(0) NOT NULL DEFAULT now(),
-    CONSTRAINT "transactions_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "accounts"("id") ON DELETE CASCADE
+    "created_at" timestamp(0) NOT NULL DEFAULT now(),
+    "updated_at" timestamp(0) NOT NULL DEFAULT now()
 );
+
+ALTER TABLE "transactions" ADD FOREIGN KEY ("from_account_id") REFERENCES "accounts" ("id");
+ALTER TABLE "transactions" ADD FOREIGN KEY ("to_account_id") REFERENCES "accounts" ("id");

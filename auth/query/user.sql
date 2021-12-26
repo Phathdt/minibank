@@ -3,12 +3,12 @@ SELECT *
 FROM users
 WHERE id = $1 LIMIT 1;
 
--- name: GetUserByEmail :one
+-- name: GetUserByUsername :one
 SELECT *
 FROM users
-WHERE email = $1 LIMIT 1;
+WHERE username = $1 LIMIT 1;
 
 -- name: InsertUser :one
-INSERT INTO users (email, password)
-VALUES (@email, @password) RETURNING *;
+INSERT INTO users (username, password)
+VALUES (@username, @password) RETURNING *;
 

@@ -3,41 +3,40 @@
 package postgresql
 
 import (
-	"database/sql"
 	"time"
 )
 
 type Account struct {
-	ID         int32         `json:"id"`
-	UserID     sql.NullInt64 `json:"user_id"`
-	BankID     sql.NullInt64 `json:"bank_id"`
-	Name       string        `json:"name"`
-	Balance    sql.NullInt64 `json:"balance"`
-	InsertedAt time.Time     `json:"inserted_at"`
-	UpdatedAt  time.Time     `json:"updated_at"`
+	ID        int64     `json:"id"`
+	UserID    int64     `json:"user_id"`
+	BankID    int64     `json:"bank_id"`
+	Name      string    `json:"name"`
+	Balance   int64     `json:"balance"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Bank struct {
-	ID         int32     `json:"id"`
-	Name       string    `json:"name"`
-	InsertedAt time.Time `json:"inserted_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Transaction struct {
-	ID         int32         `json:"id"`
-	AccountID  sql.NullInt64 `json:"account_id"`
-	Amount     sql.NullInt64 `json:"amount"`
-	Type       string        `json:"type"`
-	InsertedAt time.Time     `json:"inserted_at"`
-	UpdatedAt  time.Time     `json:"updated_at"`
+	ID            int64     `json:"id"`
+	FromAccountID int64     `json:"from_account_id"`
+	ToAccountID   int64     `json:"to_account_id"`
+	Amount        int64     `json:"amount"`
+	Type          string    `json:"type"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 type User struct {
-	ID         int32     `json:"id"`
-	Email      string    `json:"email"`
-	Password   string    `json:"password"`
-	Role       string    `json:"role"`
-	InsertedAt time.Time `json:"inserted_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID        int64     `json:"id"`
+	Username  string    `json:"username"`
+	Password  string    `json:"password"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

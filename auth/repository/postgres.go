@@ -16,9 +16,9 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{q: postgresql.New(db)}
 }
 
-func (r UserRepository) CreateUser(ctx context.Context, email string, password string) error {
+func (r UserRepository) CreateUser(ctx context.Context, username string, password string) error {
 	_, err := r.q.InsertUser(ctx, postgresql.InsertUserParams{
-		Email:    email,
+		Username: username,
 		Password: password,
 	})
 	if err != nil {
@@ -33,8 +33,8 @@ func (r UserRepository) GetUser(ctx context.Context, id int) (*auth.User, error)
 	panic("implement me")
 }
 
-func (r UserRepository) GetUserByEmail(ctx context.Context, email string) (*auth.User, error) {
-	u, err := r.q.GetUserByEmail(ctx, email)
+func (r UserRepository) GetUserByUsername(ctx context.Context, username string) (*auth.User, error) {
+	u, err := r.q.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, err
 	}

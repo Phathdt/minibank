@@ -1,10 +1,11 @@
 package http
 
 import (
-	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
 	"minibank/auth"
 	"minibank/utils/helper"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Handler struct {
@@ -16,7 +17,7 @@ func NewHandler(useCase auth.UseCase) *Handler {
 }
 
 type CreateUserDTO struct {
-	Email    string `form:"email" validate:"required,min=6,max=32"`
+	Username string `form:"username" validate:"required,min=6,max=32"`
 	Password string `form:"password" validate:"required,min=6,max=32"`
 }
 
@@ -31,7 +32,7 @@ func (h *Handler) SignUp(c *fiber.Ctx) error {
 		return helper.SimpleError(c, err)
 	}
 
-	if err := h.useCase.SignUp(c.UserContext(), data.Email, data.Password); err != nil {
+	if err := h.useCase.SignUp(c.UserContext(), data.Username, data.Password); err != nil {
 		return helper.SimpleError(c, err)
 	}
 
@@ -41,7 +42,7 @@ func (h *Handler) SignUp(c *fiber.Ctx) error {
 }
 
 type SignInDTO struct {
-	Email    string `form:"email" validate:"required,min=6,max=32"`
+	Username string `form:"username" validate:"required,min=6,max=32"`
 	Password string `form:"password" validate:"required,min=6,max=32"`
 }
 
@@ -56,7 +57,7 @@ func (h *Handler) SignIn(c *fiber.Ctx) error {
 		return helper.SimpleError(c, err)
 	}
 
-	token, err := h.useCase.SignIn(c.UserContext(), data.Email, data.Password)
+	token, err := h.useCase.SignIn(c.UserContext(), data.Username, data.Password)
 
 	if err != nil {
 		return helper.SimpleError(c, err)

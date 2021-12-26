@@ -8,64 +8,61 @@ import (
 )
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, password, role, inserted_at, updated_at
+SELECT id, username, password, created_at, updated_at
 FROM users
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Email,
+		&i.Username,
 		&i.Password,
-		&i.Role,
-		&i.InsertedAt,
+		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password, role, inserted_at, updated_at
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, username, password, created_at, updated_at
 FROM users
-WHERE email = $1 LIMIT 1
+WHERE username = $1 LIMIT 1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUsername, username)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Email,
+		&i.Username,
 		&i.Password,
-		&i.Role,
-		&i.InsertedAt,
+		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const insertUser = `-- name: InsertUser :one
-INSERT INTO users (email, password)
-VALUES ($1, $2) RETURNING id, email, password, role, inserted_at, updated_at
+INSERT INTO users (username, password)
+VALUES ($1, $2) RETURNING id, username, password, created_at, updated_at
 `
 
 type InsertUserParams struct {
-	Email    string `json:"email"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, insertUser, arg.Email, arg.Password)
+	row := q.db.QueryRowContext(ctx, insertUser, arg.Username, arg.Password)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Email,
+		&i.Username,
 		&i.Password,
-		&i.Role,
-		&i.InsertedAt,
+		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
