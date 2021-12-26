@@ -5,6 +5,7 @@ packages:
     queries:
       - './auth/query/'
       - './transaction/query/'
+      - './account/query/'
     schema: './db/migrations'
     engine: 'postgresql'
     emit_json_tags: true

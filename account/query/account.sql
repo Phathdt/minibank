@@ -18,3 +18,6 @@ SELECT *
 FROM accounts
 WHERE user_id = $1
 ORDER BY id;
+
+-- name: InsertAccount :one
+INSERT INTO accounts (user_id, bank_id, name) VALUES ($1, $2, $3) RETURNING *;

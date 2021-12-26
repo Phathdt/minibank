@@ -10,6 +10,10 @@ type AccUseCase struct {
 	accRepo account.Repository
 }
 
+func (au AccUseCase) CreateAccount(ctx context.Context, userID, bankID int64, name string) (*account.Account, error) {
+	return au.accRepo.CreateAccount(ctx, userID, bankID, name)
+}
+
 func (au AccUseCase) ListAccounts(ctx context.Context, userID int64) ([]account.Account, error) {
 	return au.accRepo.ListAccounts(ctx, userID)
 }

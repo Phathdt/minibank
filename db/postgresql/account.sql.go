@@ -29,6 +29,31 @@ func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
 	return i, err
 }
 
+const insertAccount = `-- name: InsertAccount :one
+INSERT INTO accounts (user_id, bank_id, name) VALUES ($1, $2, $3) RETURNING id, user_id, bank_id, name, balance, created_at, updated_at
+`
+
+type InsertAccountParams struct {
+	UserID int64  `json:"user_id"`
+	BankID int64  `json:"bank_id"`
+	Name   string `json:"name"`
+}
+
+func (q *Queries) InsertAccount(ctx context.Context, arg InsertAccountParams) (Account, error) {
+	row := q.db.QueryRowContext(ctx, insertAccount, arg.UserID, arg.BankID, arg.Name)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.BankID,
+		&i.Name,
+		&i.Balance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listAccounts = `-- name: ListAccounts :many
 SELECT id, user_id, bank_id, name, balance, created_at, updated_at
 FROM accounts

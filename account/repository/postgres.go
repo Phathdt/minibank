@@ -12,6 +12,21 @@ type Repo struct {
 	q *postgresql.Queries
 }
 
+func (r Repo) CreateAccount(ctx context.Context, userID, bankID int64, name string) (*account.Account, error) {
+	acc, err := r.q.InsertAccount(ctx, postgresql.InsertAccountParams{
+		UserID: userID,
+		BankID: bankID,
+		Name:   name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	data := acc.MapToEntity()
+
+	return &data, nil
+}
+
 func (r Repo) ListAccounts(ctx context.Context, userID int64) ([]account.Account, error) {
 	accs, err := r.q.ListAccounts(ctx, userID)
 	if err != nil {
