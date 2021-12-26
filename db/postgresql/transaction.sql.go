@@ -8,26 +8,25 @@ import (
 )
 
 const insertTransaction = `-- name: InsertTransaction :one
-INSERT INTO transactions (from_account_id, to_account_id, amount)
+INSERT INTO transactions (account_id, amount, transaction_type)
 		VALUES($1, $2, $3)
-	RETURNING id, from_account_id, to_account_id, amount, type, created_at, updated_at
+	RETURNING id, account_id, amount, transaction_type, created_at, updated_at
 `
 
 type InsertTransactionParams struct {
-	FromAccountID int64 `json:"from_account_id"`
-	ToAccountID   int64 `json:"to_account_id"`
-	Amount        int64 `json:"amount"`
+	AccountID       int64  `json:"account_id"`
+	Amount          int64  `json:"amount"`
+	TransactionType string `json:"transaction_type"`
 }
 
 func (q *Queries) InsertTransaction(ctx context.Context, arg InsertTransactionParams) (Transaction, error) {
-	row := q.db.QueryRowContext(ctx, insertTransaction, arg.FromAccountID, arg.ToAccountID, arg.Amount)
+	row := q.db.QueryRowContext(ctx, insertTransaction, arg.AccountID, arg.Amount, arg.TransactionType)
 	var i Transaction
 	err := row.Scan(
 		&i.ID,
-		&i.FromAccountID,
-		&i.ToAccountID,
+		&i.AccountID,
 		&i.Amount,
-		&i.Type,
+		&i.TransactionType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -36,10 +35,10 @@ func (q *Queries) InsertTransaction(ctx context.Context, arg InsertTransactionPa
 
 const listTransactions = `-- name: ListTransactions :many
 SELECT
-	t.id, t.from_account_id, t.to_account_id, t.amount, t.type, t.created_at, t.updated_at
+	t.id, t.account_id, t.amount, t.transaction_type, t.created_at, t.updated_at
 FROM
 	transactions t
-	JOIN accounts a ON t.from_account_id = a.id OR t.to_account_id = a.id
+	JOIN accounts a ON t.account_id = a.id
 	JOIN users u ON u.id = a.user_id
 WHERE
 	u.id = $1
@@ -57,10 +56,9 @@ func (q *Queries) ListTransactions(ctx context.Context, id int64) ([]Transaction
 		var i Transaction
 		if err := rows.Scan(
 			&i.ID,
-			&i.FromAccountID,
-			&i.ToAccountID,
+			&i.AccountID,
 			&i.Amount,
-			&i.Type,
+			&i.TransactionType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -79,23 +77,23 @@ func (q *Queries) ListTransactions(ctx context.Context, id int64) ([]Transaction
 
 const listTransactionsByAccount = `-- name: ListTransactionsByAccount :many
 SELECT
-	t.id, t.from_account_id, t.to_account_id, t.amount, t.type, t.created_at, t.updated_at
+	t.id, t.account_id, t.amount, t.transaction_type, t.created_at, t.updated_at
 FROM
 	transactions t
-	JOIN accounts a ON t.from_account_id = a.id OR t.to_account_id = a.id
+	JOIN accounts a ON t.account_id = a.id
 	JOIN users u ON u.id = a.user_id
 WHERE
-	u.id = $1 AND a.id = $2
+	u.id = $1 AND t.account_id = $2
 ORDER BY t.id
 `
 
 type ListTransactionsByAccountParams struct {
-	ID   int64 `json:"id"`
-	ID_2 int64 `json:"id_2"`
+	ID        int64 `json:"id"`
+	AccountID int64 `json:"account_id"`
 }
 
 func (q *Queries) ListTransactionsByAccount(ctx context.Context, arg ListTransactionsByAccountParams) ([]Transaction, error) {
-	rows, err := q.db.QueryContext(ctx, listTransactionsByAccount, arg.ID, arg.ID_2)
+	rows, err := q.db.QueryContext(ctx, listTransactionsByAccount, arg.ID, arg.AccountID)
 	if err != nil {
 		return nil, err
 	}
@@ -105,10 +103,9 @@ func (q *Queries) ListTransactionsByAccount(ctx context.Context, arg ListTransac
 		var i Transaction
 		if err := rows.Scan(
 			&i.ID,
-			&i.FromAccountID,
-			&i.ToAccountID,
+			&i.AccountID,
 			&i.Amount,
-			&i.Type,
+			&i.TransactionType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

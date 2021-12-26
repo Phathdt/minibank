@@ -24,13 +24,12 @@ type Bank struct {
 }
 
 type Transaction struct {
-	ID            int64     `json:"id"`
-	FromAccountID int64     `json:"from_account_id"`
-	ToAccountID   int64     `json:"to_account_id"`
-	Amount        int64     `json:"amount"`
-	Type          string    `json:"type"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID              int64     `json:"id"`
+	AccountID       int64     `json:"account_id"`
+	Amount          int64     `json:"amount"`
+	TransactionType string    `json:"transaction_type"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 type User struct {
