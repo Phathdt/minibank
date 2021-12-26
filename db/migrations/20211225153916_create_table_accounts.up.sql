@@ -2,7 +2,7 @@ CREATE TABLE "accounts" (
     "id" SERIAL PRIMARY KEY,
     "user_id" int8,
     "bank_id" int8,
-    "name" text,
+    "name" text NOT NULL,
     "balance" bigint,
     "inserted_at" timestamp(0) NOT NULL DEFAULT now(),
     "updated_at" timestamp(0) NOT NULL DEFAULT now(),

@@ -4,24 +4,36 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
-
-	"github.com/gofiber/fiber/v2"
+	"minibank/auth"
+	authrepo "minibank/auth/repository"
+	"minibank/auth/usecase"
 )
 
 type App struct {
+	authUC auth.UseCase
 }
 
 func NewApp() (*App, error) {
-	_, err := initDb()
+	db, err := initDb()
 	if err != nil {
 		return nil, err
 	}
 
-	return &App{}, nil
+	authRepo := authrepo.NewUserRepository(db)
+
+	return &App{
+		authUC: usecase.NewAuthUseCase(
+			authRepo,
+			viper.GetString("HASH_SALT"),
+			[]byte(viper.GetString("SIGNING_KEY")),
+			viper.GetDuration("TOKEN_TTL"),
+		),
+	}, nil
 }
 
 func ping() fiber.Handler {

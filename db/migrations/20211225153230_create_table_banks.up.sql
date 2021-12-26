@@ -1,6 +1,6 @@
 CREATE TABLE "banks" (
     "id" SERIAL PRIMARY KEY,
-    "name" text,
+    "name" text NOT NULL,
     "inserted_at" timestamp(0) NOT NULL DEFAULT now(),
     "updated_at" timestamp(0) NOT NULL DEFAULT now()
 );
