@@ -15,9 +15,28 @@ func NewHandler(useCase transaction.UseCase) *Handler {
 	return &Handler{useCase: useCase}
 }
 
+type FilterTransactionDTO struct {
+	AccountID int64 `query:"account_id"`
+}
+
 func (h *Handler) ListTransactions(c *fiber.Ctx) error {
+	data := new(FilterTransactionDTO)
+
+	if err := c.QueryParser(data); err != nil {
+		return helper.SimpleError(c, err)
+	}
+
 	user := helper.GetCurrentUser(c)
-	transactions, err := h.useCase.ListTransactions(c.UserContext(), user.ID)
+
+	var transactions []transaction.Transaction
+	var err error
+
+	if data.AccountID == 0 {
+		transactions, err = h.useCase.ListTransactions(c.UserContext(), user.ID)
+	} else {
+		transactions, err = h.useCase.ListTransactionsByAccount(c.UserContext(), user.ID, data.AccountID)
+	}
+
 	if err != nil {
 		return err
 	}
