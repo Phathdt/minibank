@@ -17,12 +17,24 @@ func (u User) MapToEntity() auth.User {
 
 func (t Transaction) MapToEntity() transaction.Transaction {
 	return transaction.Transaction{
-		ID:            t.ID,
-		FromAccountID: t.FromAccountID,
-		ToAccountID:   t.ToAccountID,
-		Amount:        t.Amount,
-		Type:          t.Type,
-		CreatedAt:     t.CreatedAt,
-		UpdatedAt:     t.UpdatedAt,
+		ID:              t.ID,
+		AccountID:       t.AccountID,
+		Amount:          t.Amount,
+		TransactionType: t.TransactionType,
+		CreatedAt:       t.CreatedAt,
+		UpdatedAt:       t.UpdatedAt,
 	}
+}
+
+func (a Account) MapToEntity() transaction.Account {
+	return transaction.Account{
+		ID:        a.ID,
+		UserID:    a.UserID,
+		BankID:    a.BankID,
+		Name:      a.Name,
+		Balance:   a.Balance,
+		CreatedAt: a.CreatedAt,
+		UpdatedAt: a.UpdatedAt,
+	}
+
 }

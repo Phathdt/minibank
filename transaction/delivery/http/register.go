@@ -11,5 +11,6 @@ func RegisterHTTPEndpoints(router *fiber.App, uc transaction.UseCase) {
 	authEndpoints := router.Group("/transactions")
 	{
 		authEndpoints.Get("", h.ListTransactions)
+		authEndpoints.Post("", h.CreateTransaction)
 	}
 }

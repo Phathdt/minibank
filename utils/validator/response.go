@@ -25,6 +25,8 @@ func ToErrResponse(err error) *ErrResponse {
 				resp.Errors[i] = fmt.Sprintf("%s must be a minimum of %s in length", err.Field(), err.Param())
 			case "url":
 				resp.Errors[i] = fmt.Sprintf("%s must be a valid URL", err.Field())
+			case "oneof":
+				resp.Errors[i] = fmt.Sprintf("%s must be one of enums %s", err.Field(), err.Param())
 			default:
 				resp.Errors[i] = fmt.Sprintf("something wrong on %s; %s", err.Field(), err.Tag())
 			}
