@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"minibank/account"
 	"minibank/db/postgresql"
 	"minibank/transaction"
 )
@@ -32,8 +33,8 @@ func (r Repo) CreateTransaction(ctx context.Context, accountID, amount int64, tr
 	return &t, nil
 }
 
-func (r Repo) GetAccount(ctx context.Context, accountID int64) (*transaction.Account, error) {
-	account, err := r.q.GetAccount(ctx, accountID)
+func (r Repo) GetAccount(ctx context.Context, accountID int64) (*account.Account, error) {
+	acc, err := r.q.GetAccount(ctx, accountID)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -43,7 +44,7 @@ func (r Repo) GetAccount(ctx context.Context, accountID int64) (*transaction.Acc
 		return nil, err
 	}
 
-	a := account.MapToEntity()
+	a := acc.MapToEntity()
 
 	return &a, nil
 }

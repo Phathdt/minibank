@@ -10,10 +10,14 @@ import (
 	jwtware "github.com/gofiber/jwt/v3"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
+	"minibank/account"
+	acchttp "minibank/account/delivery/http"
+	accrepo "minibank/account/repository"
+	accuc "minibank/account/usecase"
 	"minibank/auth"
 	authhttp "minibank/auth/delivery/http"
 	authrepo "minibank/auth/repository"
-	"minibank/auth/usecase"
+	authuc "minibank/auth/usecase"
 	"minibank/transaction"
 	transhttp "minibank/transaction/delivery/http"
 	transrepo "minibank/transaction/repository"
@@ -23,6 +27,7 @@ import (
 type App struct {
 	authUC  auth.UseCase
 	transUC transaction.UseCase
+	accUC   account.UseCase
 }
 
 func NewApp() (*App, error) {
@@ -33,15 +38,17 @@ func NewApp() (*App, error) {
 
 	authRepo := authrepo.NewUserRepository(db)
 	transRepo := transrepo.NewTransactionRepo(db)
+	accRepo := accrepo.NewAccountRepo(db)
 
 	return &App{
-		authUC: usecase.NewAuthUseCase(
+		authUC: authuc.NewAuthUseCase(
 			authRepo,
 			viper.GetString("HASH_SALT"),
 			[]byte(viper.GetString("SIGNING_KEY")),
 			viper.GetDuration("TOKEN_TTL"),
 		),
 		transUC: transuc.NewTransUseCase(transRepo),
+		accUC:   accuc.NewAccUseCase(accRepo),
 	}, nil
 }
 
@@ -76,6 +83,7 @@ func (a *App) Run(port string) error {
 	app.Use(authhttp.CurrentUser(a.authUC))
 
 	transhttp.RegisterHTTPEndpoints(app, a.transUC)
+	acchttp.RegisterHTTPEndpoints(app, a.accUC)
 
 	addr := fmt.Sprintf(":%d", viper.GetInt("PORT"))
 	err := app.Listen(addr)

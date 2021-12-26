@@ -12,3 +12,9 @@ SET
 WHERE
 	id = @account_id
 RETURNING *;
+
+-- name: ListAccounts :many
+SELECT *
+FROM accounts
+WHERE user_id = $1
+ORDER BY id;

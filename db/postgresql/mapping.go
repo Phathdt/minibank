@@ -1,6 +1,7 @@
 package postgresql
 
 import (
+	"minibank/account"
 	"minibank/auth"
 	"minibank/transaction"
 )
@@ -26,8 +27,8 @@ func (t Transaction) MapToEntity() transaction.Transaction {
 	}
 }
 
-func (a Account) MapToEntity() transaction.Account {
-	return transaction.Account{
+func (a Account) MapToEntity() account.Account {
+	return account.Account{
 		ID:        a.ID,
 		UserID:    a.UserID,
 		BankID:    a.BankID,

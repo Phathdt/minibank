@@ -8,9 +8,9 @@ import (
 func RegisterHTTPEndpoints(router *fiber.App, uc transaction.UseCase) {
 	h := NewHandler(uc)
 
-	authEndpoints := router.Group("/transactions")
+	endpoint := router.Group("/transactions")
 	{
-		authEndpoints.Get("", h.ListTransactions)
-		authEndpoints.Post("", h.CreateTransaction)
+		endpoint.Get("", h.ListTransactions)
+		endpoint.Post("", h.CreateTransaction)
 	}
 }
