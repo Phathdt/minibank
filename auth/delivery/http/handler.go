@@ -39,3 +39,30 @@ func (h *Handler) SignUp(c *fiber.Ctx) error {
 		"msg": "OK",
 	})
 }
+
+type SignInDTO struct {
+	Email    string `form:"email" validate:"required,min=6,max=32"`
+	Password string `form:"password" validate:"required,min=6,max=32"`
+}
+
+func (h *Handler) SignIn(c *fiber.Ctx) error {
+	data := new(SignInDTO)
+
+	if err := c.BodyParser(data); err != nil {
+		return helper.SimpleError(c, err)
+	}
+
+	if err := validator.New().Struct(data); err != nil {
+		return helper.SimpleError(c, err)
+	}
+
+	token, err := h.useCase.SignIn(c.UserContext(), data.Email, data.Password)
+
+	if err != nil {
+		return helper.SimpleError(c, err)
+	}
+
+	return c.Status(200).JSON(&fiber.Map{
+		"token": token,
+	})
+}

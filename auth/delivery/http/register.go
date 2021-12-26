@@ -11,5 +11,6 @@ func RegisterHTTPEndpoints(router *fiber.App, uc auth.UseCase) {
 	authEndpoints := router.Group("/auth")
 	{
 		authEndpoints.Post("/signup", h.SignUp)
+		authEndpoints.Post("/signin", h.SignIn)
 	}
 }
