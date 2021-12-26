@@ -10,17 +10,12 @@ import (
 const getAccount = `-- name: GetAccount :one
 SELECT id, user_id, bank_id, name, balance, created_at, updated_at
 FROM accounts
-WHERE user_id = $1
-  AND id = $2 LIMIT 1
+WHERE id = $1
+LIMIT 1
 `
 
-type GetAccountParams struct {
-	UserID int64 `json:"user_id"`
-	ID     int64 `json:"id"`
-}
-
-func (q *Queries) GetAccount(ctx context.Context, arg GetAccountParams) (Account, error) {
-	row := q.db.QueryRowContext(ctx, getAccount, arg.UserID, arg.ID)
+func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
+	row := q.db.QueryRowContext(ctx, getAccount, id)
 	var i Account
 	err := row.Scan(
 		&i.ID,

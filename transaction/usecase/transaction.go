@@ -11,19 +11,17 @@ type TransUseCase struct {
 }
 
 func (tu *TransUseCase) CreateDepositTransaction(ctx context.Context, userID, accountID, amount int64) (*transaction.Transaction, error) {
-	//tim account
-	_, err := tu.transRepo.GetAccount(ctx, userID, accountID)
+	_, err := tu.transRepo.GetAccount(ctx, accountID)
 	if err != nil {
 		return nil, err
 	}
 
-	// tao transaction
-	tran, err := tu.transRepo.CreateTransaction(ctx, userID, accountID, amount, "deposit")
+	// TODO: wrap transaction db
+	tran, err := tu.transRepo.CreateTransaction(ctx, accountID, amount, "deposit")
 	if err != nil {
 		return nil, err
 	}
 
-	// update balance account
 	if err = tu.transRepo.UpdateAccount(ctx, accountID, amount); err != nil {
 		return nil, err
 	}
@@ -32,8 +30,29 @@ func (tu *TransUseCase) CreateDepositTransaction(ctx context.Context, userID, ac
 }
 
 func (tu *TransUseCase) CreateWithdrawTransaction(ctx context.Context, userID, accountID, amount int64) (*transaction.Transaction, error) {
-	//TODO implement me
-	panic("implement me")
+	account, err := tu.transRepo.GetAccount(ctx, accountID)
+	if err != nil {
+		return nil, err
+	}
+
+	if account.UserID != userID {
+		return nil, transaction.ErrAccountNotFound
+	}
+
+	if account.Balance < amount {
+		return nil, transaction.ErrAccountBalance
+	}
+
+	tran, err := tu.transRepo.CreateTransaction(ctx, accountID, amount, "withdraw")
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tu.transRepo.UpdateAccount(ctx, accountID, -amount); err != nil {
+		return nil, err
+	}
+
+	return tran, nil
 }
 
 func NewTransUseCase(transRepo transaction.Repository) *TransUseCase {

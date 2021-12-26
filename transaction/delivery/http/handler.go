@@ -47,10 +47,17 @@ func (h *Handler) CreateTransaction(c *fiber.Ctx) error {
 
 	user := helper.GetCurrentUser(c)
 
-	t, err := h.useCase.CreateDepositTransaction(c.UserContext(), user.ID, data.AccountID, data.Amount)
+	var t *transaction.Transaction
+	var err error
+
+	if data.TransactionType == "deposit" {
+		t, err = h.useCase.CreateDepositTransaction(c.UserContext(), user.ID, data.AccountID, data.Amount)
+	} else {
+		t, err = h.useCase.CreateWithdrawTransaction(c.UserContext(), user.ID, data.AccountID, data.Amount)
+	}
 
 	if err != nil {
-		return err
+		return helper.SimpleError(c, err)
 	}
 
 	return c.Status(200).JSON(&fiber.Map{

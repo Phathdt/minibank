@@ -1,8 +1,8 @@
 -- name: GetAccount :one
 SELECT *
 FROM accounts
-WHERE user_id = $1
-  AND id = $2 LIMIT 1;
+WHERE id = $1
+LIMIT 1;
 
 -- name: UpdateBalanceAccount :one
 UPDATE

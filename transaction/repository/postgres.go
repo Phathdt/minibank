@@ -16,7 +16,7 @@ func NewTransactionRepo(db *sql.DB) *Repo {
 	return &Repo{q: postgresql.New(db)}
 }
 
-func (r Repo) CreateTransaction(ctx context.Context, userID, accountID, amount int64, transactionType string) (*transaction.Transaction, error) {
+func (r Repo) CreateTransaction(ctx context.Context, accountID, amount int64, transactionType string) (*transaction.Transaction, error) {
 	trans, err := r.q.InsertTransaction(ctx, postgresql.InsertTransactionParams{
 		AccountID:       accountID,
 		Amount:          amount,
@@ -32,13 +32,14 @@ func (r Repo) CreateTransaction(ctx context.Context, userID, accountID, amount i
 	return &t, nil
 }
 
-func (r Repo) GetAccount(ctx context.Context, userID, accountID int64) (*transaction.Account, error) {
-	account, err := r.q.GetAccount(ctx, postgresql.GetAccountParams{
-		ID:     accountID,
-		UserID: userID,
-	})
+func (r Repo) GetAccount(ctx context.Context, accountID int64) (*transaction.Account, error) {
+	account, err := r.q.GetAccount(ctx, accountID)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, transaction.ErrAccountNotFound
+		}
+
 		return nil, err
 	}
 
