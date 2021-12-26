@@ -70,20 +70,13 @@ func (a *App) Run(port string) error {
 
 	authhttp.RegisterHTTPEndpoints(app, a.authUC)
 
-	// JWT Middleware
-	app.Use(jwtware.New(jwtware.Config{
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"message": "Unauthorized",
-			})
-		},
-		SigningKey: []byte(viper.GetString("SIGNING_KEY")),
-	}))
+	privateRouter(app, a)
 
-	app.Use(authhttp.CurrentUser(a.authUC))
-
-	transhttp.RegisterHTTPEndpoints(app, a.transUC)
-	acchttp.RegisterHTTPEndpoints(app, a.accUC)
+	app.Use(func(c *fiber.Ctx) error {
+		return c.Status(404).JSON(&fiber.Map{
+			"msg": "Not found",
+		})
+	})
 
 	addr := fmt.Sprintf(":%d", viper.GetInt("PORT"))
 	err := app.Listen(addr)
@@ -93,6 +86,20 @@ func (a *App) Run(port string) error {
 	}
 
 	return nil
+}
+
+func privateRouter(app *fiber.App, a *App) {
+	router := app.Group("/api", jwtware.New(jwtware.Config{
+		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"message": "Unauthorized",
+			})
+		},
+		SigningKey: []byte(viper.GetString("SIGNING_KEY")),
+	}), authhttp.CurrentUser(a.authUC))
+
+	transhttp.RegisterHTTPEndpoints(router, a.transUC)
+	acchttp.RegisterHTTPEndpoints(router, a.accUC)
 }
 
 func initDb() (*sql.DB, error) {

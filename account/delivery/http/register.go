@@ -5,7 +5,7 @@ import (
 	"minibank/account"
 )
 
-func RegisterHTTPEndpoints(router *fiber.App, au account.UseCase) {
+func RegisterHTTPEndpoints(router fiber.Router, au account.UseCase) {
 	h := NewHandler(au)
 
 	authEndpoints := router.Group("/accounts")

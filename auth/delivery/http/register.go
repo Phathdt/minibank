@@ -8,7 +8,7 @@ import (
 func RegisterHTTPEndpoints(router *fiber.App, uc auth.UseCase) {
 	h := NewHandler(uc)
 
-	endpoint := router.Group("/auth")
+	endpoint := router.Group("/api/auth")
 	{
 		endpoint.Post("/signup", h.SignUp)
 		endpoint.Post("/signin", h.SignIn)
