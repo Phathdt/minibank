@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	jwtware "github.com/gofiber/jwt/v3"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 	"minibank/auth"
@@ -61,6 +62,19 @@ func (a *App) Run(port string) error {
 	app.Get("/ping", ping())
 
 	authhttp.RegisterHTTPEndpoints(app, a.authUC)
+
+	// JWT Middleware
+	app.Use(jwtware.New(jwtware.Config{
+		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"message": "Unauthorized",
+			})
+		},
+		SigningKey: []byte(viper.GetString("SIGNING_KEY")),
+	}))
+
+	app.Use(authhttp.CurrentUser(a.authUC))
+
 	transhttp.RegisterHTTPEndpoints(app, a.transUC)
 
 	addr := fmt.Sprintf(":%d", viper.GetInt("PORT"))

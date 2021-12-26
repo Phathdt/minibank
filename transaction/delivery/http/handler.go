@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/gofiber/fiber/v2"
 	"minibank/transaction"
+	"minibank/utils/helper"
 )
 
 type Handler struct {
@@ -14,7 +15,8 @@ func NewHandler(useCase transaction.UseCase) *Handler {
 }
 
 func (h *Handler) ListTransactions(c *fiber.Ctx) error {
-	transactions, err := h.useCase.ListTransactions(c.UserContext(), 1)
+	user := helper.GetCurrentUser(c)
+	transactions, err := h.useCase.ListTransactions(c.UserContext(), user.ID)
 	if err != nil {
 		return err
 	}

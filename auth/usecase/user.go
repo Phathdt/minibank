@@ -11,12 +11,6 @@ import (
 	"github.com/dgrijalva/jwt-go/v4"
 )
 
-type AuthClaims struct {
-	jwt.StandardClaims
-	ID       int64  `json:"id"`
-	Username string `json:"username"`
-}
-
 type AuthUseCase struct {
 	userRepo       auth.UserRepository
 	hashSalt       string
@@ -29,7 +23,7 @@ func NewAuthUseCase(userRepo auth.UserRepository, hashSalt string, signingKey []
 		userRepo:       userRepo,
 		hashSalt:       hashSalt,
 		signingKey:     signingKey,
-		expireDuration: expireDuration,
+		expireDuration: expireDuration * time.Second,
 	}
 }
 
@@ -61,15 +55,17 @@ func (au *AuthUseCase) SignIn(ctx context.Context, username, password string) (s
 		return "", auth.ErrPasswordNotMatch
 	}
 
-	claims := AuthClaims{
-		ID:       user.ID,
-		Username: user.Username,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: jwt.At(time.Now().Add(au.expireDuration)),
-		},
+	claims := jwt.MapClaims{
+		"user_id":  user.ID,
+		"username": user.Username,
+		"exp":      time.Now().Add(au.expireDuration).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString(au.signingKey)
+}
+
+func (au *AuthUseCase) GetUser(ctx context.Context, username string) (*auth.User, error) {
+	return au.userRepo.GetUserByUsername(ctx, username)
 }
