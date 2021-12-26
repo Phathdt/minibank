@@ -10,13 +10,18 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 	"minibank/auth"
-	"minibank/auth/delivery/http"
+	authhttp "minibank/auth/delivery/http"
 	authrepo "minibank/auth/repository"
 	"minibank/auth/usecase"
+	"minibank/transaction"
+	transhttp "minibank/transaction/delivery/http"
+	transrepo "minibank/transaction/repository"
+	transuc "minibank/transaction/usecase"
 )
 
 type App struct {
-	authUC auth.UseCase
+	authUC  auth.UseCase
+	transUC transaction.UseCase
 }
 
 func NewApp() (*App, error) {
@@ -26,6 +31,7 @@ func NewApp() (*App, error) {
 	}
 
 	authRepo := authrepo.NewUserRepository(db)
+	transRepo := transrepo.NewTransactionRepo(db)
 
 	return &App{
 		authUC: usecase.NewAuthUseCase(
@@ -34,6 +40,7 @@ func NewApp() (*App, error) {
 			[]byte(viper.GetString("SIGNING_KEY")),
 			viper.GetDuration("TOKEN_TTL"),
 		),
+		transUC: transuc.NewTransUseCase(transRepo),
 	}, nil
 }
 
@@ -53,7 +60,8 @@ func (a *App) Run(port string) error {
 	app.Get("/", ping())
 	app.Get("/ping", ping())
 
-	http.RegisterHTTPEndpoints(app, a.authUC)
+	authhttp.RegisterHTTPEndpoints(app, a.authUC)
+	transhttp.RegisterHTTPEndpoints(app, a.transUC)
 
 	addr := fmt.Sprintf(":%d", viper.GetInt("PORT"))
 	err := app.Listen(addr)
