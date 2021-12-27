@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [master]
 env:
-  DATABASE_URL: postgresql://postgres:123123123@postgres:5432/minibank?sslmode=disable
+  DATABASE_URL: postgresql://postgres:123123123@db:5432/minibank?sslmode=disable
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
+      db:
         image: postgres
         env:
           POSTGRES_USER: postgres
@@ -40,6 +40,7 @@ jobs:
           curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.1/migrate.linux-amd64.tar.gz | tar xvz
           sudo mv migrate /usr/bin/migrate
           which migrate
+
       - name: Run migrations
         run: migrate -path db/migrations -database $DATABASE_URL up
 
