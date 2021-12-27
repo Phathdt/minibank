@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [master]
 env:
-  DATABASE_URL: postgresql://postgres:123123123@db:5432/minibank?sslmode=disable
+  DATABASE_URL: postgresql://postgres:123123123@postgres:5432/minibank?sslmode=disable
 
 jobs:
   build:
@@ -15,11 +15,11 @@ jobs:
 
     services:
       postgres:
-        image: bitnami/postgresql:14.1.0
+        image: postgres
         env:
-          POSTGRESQL_USERNAME: postgres
-          POSTGRESQL_PASSWORD: 123123123
-          POSTGRESQL_DATABASE: minibank
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 123123123
+          POSTGRES_DB: minibank
         ports:
           - 5432:5432
         options: >-
