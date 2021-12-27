@@ -2,7 +2,7 @@
 
 1. [X] Implement a Rest API with CRUD functionality.
 2. [X] Database: MySQL or PostgreSQL.
-3. [ ] Unit test as much as you can.
+3. [X] Unit test as much as you can. ( only storage )
 4. [X] Set up service with docker compse.
 
 ----
@@ -48,4 +48,4 @@ docker-compose up
 - deploy with Github Action and ArgoCD
 - add replica postgres
 - add cache DB ( Redis )
-- add more testable
+- add more testable for repository, usecase, ...

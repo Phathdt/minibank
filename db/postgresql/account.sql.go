@@ -92,7 +92,7 @@ func (q *Queries) ListAccounts(ctx context.Context, userID int64) ([]Account, er
 	return items, nil
 }
 
-const updateAccount = `-- name: UpdateBalanceAccount :one
+const updateAccount = `-- name: UpdateAccount :one
 UPDATE
 	accounts
 SET
