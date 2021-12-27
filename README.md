@@ -11,6 +11,7 @@
 2. [X] Authen with jwt
 3. [X] generate query with sqlc instead of raw sql
 4. [X] Private and public routes
+5. [X] CI integration
 
 
 ### **API Endpoints**
