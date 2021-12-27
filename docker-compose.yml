@@ -23,6 +23,12 @@ services:
         condition: service_healthy
   backend:
     build: .
+    environment:
+      PORT: 3000
+      HASH_SALT: HASH_SALT
+      SIGNING_KEY: SIGNING_KEY
+      TOKEN_TTL: 86400
+      DATABASE_URL: postgresql://postgres:123123123@db:5432/minibank?sslmode=disable
     depends_on:
       db:
         condition: service_healthy
