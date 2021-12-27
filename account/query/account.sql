@@ -21,3 +21,12 @@ ORDER BY id;
 
 -- name: InsertAccount :one
 INSERT INTO accounts (user_id, bank_id, name) VALUES ($1, $2, $3) RETURNING *;
+
+-- name: UpdateAccount :one
+UPDATE
+	accounts
+SET
+	name = $1
+WHERE
+	id = $2
+RETURNING *;

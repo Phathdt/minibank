@@ -12,5 +12,6 @@ func RegisterHTTPEndpoints(router fiber.Router, au account.UseCase) {
 	{
 		authEndpoints.Get("", h.ListAccounts)
 		authEndpoints.Post("", h.CreateAccount)
+		authEndpoints.Put("/:id", h.UpdateAccount)
 	}
 }

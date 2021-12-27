@@ -1,6 +1,8 @@
 package http
 
 import (
+	"strconv"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"minibank/account"
@@ -48,6 +50,39 @@ func (h *Handler) CreateAccount(c *fiber.Ctx) error {
 	user := helper.GetCurrentUser(c)
 
 	acc, err := h.useCase.CreateAccount(c.UserContext(), user.ID, data.BankID, data.Name)
+	if err != nil {
+		return helper.SimpleError(c, err)
+	}
+
+	return c.Status(200).JSON(&fiber.Map{
+		"msg":  "OK",
+		"data": acc,
+	})
+}
+
+type UpdateAccountDTO struct {
+	Name string `json:"name" form:"name" validate:"required"`
+}
+
+func (h *Handler) UpdateAccount(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return helper.SimpleError(c, err)
+	}
+	data := new(UpdateAccountDTO)
+
+	if err := c.BodyParser(data); err != nil {
+		return helper.SimpleError(c, err)
+	}
+
+	if err := validator.New().Struct(data); err != nil {
+		return helper.SimpleError(c, err)
+	}
+
+	user := helper.GetCurrentUser(c)
+
+	acc, err := h.useCase.UpdateAccount(c.UserContext(), user.ID, int64(id), data.Name)
+
 	if err != nil {
 		return helper.SimpleError(c, err)
 	}

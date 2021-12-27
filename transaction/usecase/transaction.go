@@ -28,7 +28,7 @@ func (tu *TransUseCase) CreateDepositTransaction(ctx context.Context, userID, ac
 		return nil, err
 	}
 
-	if err = tu.accRepo.UpdateAccount(ctx, accountID, amount); err != nil {
+	if err = tu.accRepo.UpdateBalanceAccount(ctx, accountID, amount); err != nil {
 		return nil, err
 	}
 
@@ -54,7 +54,7 @@ func (tu *TransUseCase) CreateWithdrawTransaction(ctx context.Context, userID, a
 		return nil, err
 	}
 
-	if err := tu.accRepo.UpdateAccount(ctx, accountID, -amount); err != nil {
+	if err := tu.accRepo.UpdateBalanceAccount(ctx, accountID, -amount); err != nil {
 		return nil, err
 	}
 

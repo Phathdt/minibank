@@ -92,6 +92,36 @@ func (q *Queries) ListAccounts(ctx context.Context, userID int64) ([]Account, er
 	return items, nil
 }
 
+const updateAccount = `-- name: UpdateBalanceAccount :one
+UPDATE
+	accounts
+SET
+	name = $1
+WHERE
+	id = $2
+RETURNING id, user_id, bank_id, name, balance, created_at, updated_at
+`
+
+type UpdateAccountParams struct {
+	Name string `json:"name"`
+	ID   int64  `json:"id"`
+}
+
+func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
+	row := q.db.QueryRowContext(ctx, updateAccount, arg.Name, arg.ID)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.BankID,
+		&i.Name,
+		&i.Balance,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateBalanceAccount = `-- name: UpdateBalanceAccount :one
 UPDATE
 	accounts

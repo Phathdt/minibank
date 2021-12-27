@@ -12,6 +12,20 @@ type Repo struct {
 	q *postgresql.Queries
 }
 
+func (r Repo) UpdateAccount(ctx context.Context, accountID int64, name string) (*account.Account, error) {
+	acc, err := r.q.UpdateAccount(ctx, postgresql.UpdateAccountParams{
+		Name: name,
+		ID:   accountID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	data := acc.MapToEntity()
+
+	return &data, nil
+}
+
 func (r Repo) CreateAccount(ctx context.Context, userID, bankID int64, name string) (*account.Account, error) {
 	acc, err := r.q.InsertAccount(ctx, postgresql.InsertAccountParams{
 		UserID: userID,
@@ -58,7 +72,7 @@ func (r Repo) GetAccount(ctx context.Context, accountID int64) (*account.Account
 	return &a, nil
 }
 
-func (r Repo) UpdateAccount(ctx context.Context, accountID, balance int64) error {
+func (r Repo) UpdateBalanceAccount(ctx context.Context, accountID, balance int64) error {
 	_, err := r.q.UpdateBalanceAccount(ctx, postgresql.UpdateBalanceAccountParams{
 		Balance:   balance,
 		AccountID: accountID,
