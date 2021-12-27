@@ -33,6 +33,7 @@ import postman collection (minibank.json)
 - **Golang-Migrate**: *Efficient schema generating, up/down migrating*
 - **Docker** + **Docker-Compose**: *Containerization, what else to say ...*
 - **Viper**: *Add robustness to configurations*
+- **Github Actions CI**: *Make sure we don't push trash code into the codebase*
 
 ## Booting Up
 
@@ -50,3 +51,4 @@ docker-compose up
 - add replica postgres
 - add cache DB ( Redis )
 - add more testable for repository, usecase, ...
+- add pagination and meta data

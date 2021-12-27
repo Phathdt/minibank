@@ -12,15 +12,15 @@ import (
 	"github.com/spf13/viper"
 	"minibank/account"
 	acchttp "minibank/account/delivery/http"
-	accrepo "minibank/account/repository"
+	accrepo "minibank/account/repository/postgres"
 	accuc "minibank/account/usecase"
 	"minibank/auth"
 	authhttp "minibank/auth/delivery/http"
-	authrepo "minibank/auth/repository"
+	authrepo "minibank/auth/repository/postgres"
 	authuc "minibank/auth/usecase"
 	"minibank/transaction"
 	transhttp "minibank/transaction/delivery/http"
-	transrepo "minibank/transaction/repository"
+	transrepo "minibank/transaction/repository/postgres"
 	transuc "minibank/transaction/usecase"
 )
 
