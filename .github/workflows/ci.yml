@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [master]
 env:
-  DATABASE_URL: postgresql://postgres:123123123@db:5432/minibank?sslmode=disable
+  DATABASE_URL: postgresql://postgres:123123123@localhost:5432/minibank?sslmode=disable
 
 jobs:
   build:
